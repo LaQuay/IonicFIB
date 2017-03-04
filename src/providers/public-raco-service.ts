@@ -3,18 +3,24 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 var API_RACO_URL = 'https://api.fib.upc.edu/v2';
+var SUBJECT_ID = 'assignatures';
+var SEMESTER_ID = 'quadrimestres';
+var CLASS_ID = 'classes';
+
 var CLIENT_ID = 'lM6FOOG62LliFSfxYbD3MqwxSDUR7JuEodgNFRX8';
+var JSON_FORMAT = 'format=json'
 
 @Injectable()
 export class PublicRacoService {
-    data = [];
+    dataSubjects = [];
+    dataTimetables = [];
 
     constructor(private http: Http) {
         console.log('Hello PublicRacoService Provider');
     }
 
-    load() {
-        if (this.data) {
+    loadSubjects() {
+        if (this.dataSubjects) {
             // already loaded data
             //return Promise.resolve(this.data);
         }
@@ -24,12 +30,50 @@ export class PublicRacoService {
             // We're using Angular HTTP provider to request the data,
             // then on the response, it'll map the JSON data to a parsed JS object.
             // Next, we process the data and resolve the promise with the new data.
-            this.http.get(API_RACO_URL + "/assignatures/?format=json" + "&client_id=" + CLIENT_ID)
+            this.http.get(API_RACO_URL + '/' + SUBJECT_ID + '/?' + JSON_FORMAT + '&' + 'client_id=' + CLIENT_ID)
             .map(res => res.json())
             .subscribe(data => {
-                this.data = data.results;
-                resolve(this.data);
+                this.dataSubjects = data.results;
+                resolve(this.dataSubjects);
             });
         });
+    }
+
+    loadTimetableSubjects() {
+        console.log('loadTimetableSubjects');
+        return new Promise(resolve => {
+            // We're using Angular HTTP provider to request the data,
+            // then on the response, it'll map the JSON data to a parsed JS object.
+            // Next, we process the data and resolve the promise with the new data.
+            this.http.get(API_RACO_URL + '/' + SEMESTER_ID + '/?' + JSON_FORMAT + '&' + 'client_id=' + CLIENT_ID)
+            .map(res => res.json())
+            .subscribe(data => {
+                console.log('loadTimetableSubjects subscribe');
+                var semesterIDs = (data.results).map(function(a) {return a.id;});
+                semesterIDs.sort(function(id1, id2){
+                    return id1 < id2;
+                });
+                var lastSemesterID = semesterIDs[0];
+
+                resolve(this.loadSemesterTimetableSubjects(lastSemesterID));
+            });
+        });
+    }
+
+    loadSemesterTimetableSubjects(semesterID: string) {
+        console.log('loadSemesterTimetableSubjects');
+        return new Promise(resolve => {
+            // We're using Angular HTTP provider to request the data,
+            // then on the response, it'll map the JSON data to a parsed JS object.
+            // Next, we process the data and resolve the promise with the new data.
+            this.http.get(API_RACO_URL + '/' + SEMESTER_ID + '/' + semesterID + '/' + CLASS_ID
+                + '/?' + JSON_FORMAT + '&' + 'client_id=' + CLIENT_ID)
+            .map(res => res.json())
+            .subscribe(data => {
+                console.log('loadSemesterTimetableSubjects subscribe');
+                this.dataTimetables = data.results;
+                resolve(this.dataTimetables);
+            });
+        })
     }
 }

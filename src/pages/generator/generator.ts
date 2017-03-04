@@ -17,26 +17,42 @@ export class GeneratorPage {
     searchSelectSubjectString = '';
     searchDeleteSubjectString = '';
 
-    data: any[];
+    dataSubjects: any[];
+    dataTimetables: any[];
 
     constructor(public navCtrl: NavController, public publicRacoService: PublicRacoService) {
-        this.loadSubjects();
+        this.loadTimetableSubjects();
+        //this.loadSubjects();
+    }
+
+    loadTimetableSubjects() {
+        this.publicRacoService.loadTimetableSubjects()
+        .then(data => {
+            console.log("Received timetables");
+            this.dataTimetables = Object.keys(data).map(key => data[key]);
+
+            this.loadSubjects();
+        });
     }
 
     loadSubjects() {
-        this.publicRacoService.load()
+        this.publicRacoService.loadSubjects()
         .then(data => {
-            console.log("Received data");
-            this.data = Object.keys(data).map(key => data[key]);
-            //console.log(this.data);
-
+            console.log("Received Subjects");
+            this.dataSubjects = Object.keys(data).map(key => data[key]);
             this.initializeData();
         });
     }
 
     initializeData() {
-        var subjectNames = this.data.map(function(a) {return a.sigles;});
-        //console.log(subjectNames);
+        var subjectNamesSemester = this.dataTimetables.map(function(a) {return a.codi_assig;});
+        var subjectNames = this.dataSubjects.map(function(a) {return a.sigles;});
+        console.log(subjectNames.length);
+        subjectNames = subjectNames.filter((v) => {
+            var isInSemester = subjectNamesSemester.indexOf(v) > -1;
+            return isInSemester;
+        })
+        console.log(subjectNames.length);
 
         this.subjects = subjectNames;
         this.selectedSubjects = [];
@@ -45,7 +61,13 @@ export class GeneratorPage {
     }
 
     generateTimetable() {
-        console.log(this.subjects);
+        console.log(this.selectedSubjects);
+
+        var timetables = this.dataTimetables.filter((v) => {
+            var subjectIsSelected = this.selectedSubjects.indexOf(v.codi_assig) > -1;
+            return subjectIsSelected;
+        })
+        console.log(timetables);
     }
 
     searchSelectSubjects(searchbar) {
