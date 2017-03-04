@@ -1,38 +1,41 @@
 import { Component } from '@angular/core';
 
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, Platform } from 'ionic-angular';
+
+import { AuthService } from '../../providers/auth-service';
 
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
+    providers: [AuthService]
 })
+
 export class HomePage {
-  selectedItem: any;
-  icons: string[];
-  items: Array<{title: string, note: string, icon: string}>;
+  isUserLogged: boolean;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-    // If we navigated to this page, we will have an item available as a nav param
-    this.selectedItem = navParams.get('item');
-
-    // Let's populate this page with some filler content for funzies
-    this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane',
-    'american-football', 'boat', 'bluetooth', 'build'];
-
-    this.items = [];
-    for (let i = 1; i < 11; i++) {
-      this.items.push({
-        title: 'Item ' + i,
-        note: 'This is item #' + i,
-        icon: this.icons[Math.floor(Math.random() * this.icons.length)]
-      });
-    }
+  constructor(public navCtrl: NavController, public authService: AuthService, private platform: Platform) {
+    this.isUserLogged = false;
   }
 
-  itemTapped(event, item) {
-    // That's right, we're pushing to ourselves!
-    this.navCtrl.push(HomePage, {
-      item: item
+  public login() {
+    this.platform.ready().then(() => {
+        this.authService.login().then(success => {
+            alert("Log in successfully! :)");
+            this.isUserLogged = true;
+        }, (error) => {
+            alert("Error, not logged in :(");
+            this.isUserLogged = false;
+        });
+    });
+  }
+
+  public logout(){
+    console.log("log out click");
+    this.platform.ready().then(() => {
+        this.authService.logout().then(success => {
+          this.isUserLogged = false;
+        }, (error) => {
+        });
     });
   }
 }

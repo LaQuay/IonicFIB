@@ -1,7 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
-import { LoginPage } from '../pages/login/login';
 import { HomePage } from '../pages/home/home';
 import { GeneratorPage } from '../pages/generator/generator';
 import { AuthService } from '../providers/auth-service';
@@ -10,7 +9,6 @@ import { PublicRacoService } from '../providers/public-raco-service';
 @NgModule({
   declarations: [
     MyApp,
-    LoginPage,
     HomePage,
     GeneratorPage
   ],
@@ -20,7 +18,6 @@ import { PublicRacoService } from '../providers/public-raco-service';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    LoginPage,
     HomePage,
     GeneratorPage
   ],

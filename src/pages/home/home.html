@@ -3,21 +3,17 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Page Home</ion-title>
+    <ion-title>Home</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <ion-icon [name]="item.icon" item-left></ion-icon>
-      {{item.title}}
-      <div class="item-note" item-right>
-        {{item.note}}
-      </div>
-    </button>
-  </ion-list>
-  <div *ngIf="selectedItem" padding>
-    You navigated here from <b>{{selectedItem.title}}</b>
+  <div *ngIf="isUserLogged == true">
+    <h3>Welcome back, </h3>    
+    <button ion-button secondary (click)="logout()">Logout</button>    
+  </div>
+
+  <div *ngIf="isUserLogged == false">
+    <button ion-button secondary (click)="login()">Login</button>    
   </div>
 </ion-content>
