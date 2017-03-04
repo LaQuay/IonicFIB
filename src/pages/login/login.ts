@@ -19,10 +19,10 @@ var REDIRECT_URI: string="http://localhost/callback";
 var RANDOM_STRING: string="fast_parrot";
 
 @Component({
-  selector: 'page-page1',
-  templateUrl: 'page1.html'
+  selector: 'page-login',
+  templateUrl: 'login.html'
 })
-export class Page1 {
+export class LoginPage {
 
   constructor(public navCtrl: NavController, private platform: Platform, private http: Http) {
 
