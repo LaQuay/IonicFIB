@@ -6,6 +6,7 @@ import { HomePage } from '../pages/home/home';
 import { GeneratorPage } from '../pages/generator/generator';
 import { AuthService } from '../providers/auth-service';
 import { PublicRacoService } from '../providers/public-raco-service';
+import { ScheduleAlgorithm } from '../providers/schedule-algorithm';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,6 @@ import { PublicRacoService } from '../providers/public-raco-service';
     HomePage,
     GeneratorPage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}, AuthService, PublicRacoService],
+  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}, AuthService, PublicRacoService, ScheduleAlgorithm],
 })
 export class AppModule {}

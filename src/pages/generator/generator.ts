@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 
 import { PublicRacoService } from '../../providers/public-raco-service';
+import { ScheduleAlgorithm } from '../../providers/schedule-algorithm';
 
 @Component({
     selector: 'page-generator',
     templateUrl: 'generator.html',
-    providers: [PublicRacoService]
+    providers: [PublicRacoService, ScheduleAlgorithm]
 })
 export class GeneratorPage {
     subjects: string[];
@@ -20,7 +21,8 @@ export class GeneratorPage {
     dataSubjects: any[];
     dataTimetables: any[];
 
-    constructor(public navCtrl: NavController, public publicRacoService: PublicRacoService) {
+    constructor(public navCtrl: NavController, private publicRacoService: PublicRacoService,
+                private scheduleAlgorithm: ScheduleAlgorithm) {
         this.loadTimetableSubjects();
         //this.loadSubjects();
     }
@@ -47,12 +49,10 @@ export class GeneratorPage {
     initializeData() {
         var subjectNamesSemester = this.dataTimetables.map(function(a) {return a.codi_assig;});
         var subjectNames = this.dataSubjects.map(function(a) {return a.sigles;});
-        console.log(subjectNames.length);
         subjectNames = subjectNames.filter((v) => {
             var isInSemester = subjectNamesSemester.indexOf(v) > -1;
             return isInSemester;
         })
-        console.log(subjectNames.length);
 
         this.subjects = subjectNames;
         this.selectedSubjects = [];
@@ -61,13 +61,14 @@ export class GeneratorPage {
     }
 
     generateTimetable() {
-        console.log(this.selectedSubjects);
-
         var timetables = this.dataTimetables.filter((v) => {
             var subjectIsSelected = this.selectedSubjects.indexOf(v.codi_assig) > -1;
             return subjectIsSelected;
         })
-        console.log(timetables);
+
+        this.scheduleAlgorithm.setData(timetables);
+        var timetable = this.scheduleAlgorithm.calculateTimetable();
+        console.log(timetable);
     }
 
     searchSelectSubjects(searchbar) {
@@ -118,9 +119,6 @@ export class GeneratorPage {
             var isSelected = this.selectedSubjects.indexOf(v) > -1;
             return !isSelected;
         })
-
-        console.log(subject);
-        console.log(this.selectedSubjects);
     }
 
     deleteSubject(subject: string) {

@@ -14,7 +14,7 @@
     placeholder="Search"></ion-searchbar>
     <ion-list>
       <div *ngFor="let subject of filteredSelectSubjects;  let i=index">
-        <div *ngIf="i<5">
+        <div *ngIf="i<2">
           <button ion-item (click)="selectSubject(subject)">
             {{subject}}
           </button>
