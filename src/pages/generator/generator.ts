@@ -2,9 +2,12 @@ import { Component } from '@angular/core';
 
 import { NavController } from 'ionic-angular';
 
+import { RacoService } from '../../providers/raco-service';
+
 @Component({
     selector: 'page-generator',
-    templateUrl: 'generator.html'
+    templateUrl: 'generator.html',
+    providers: [RacoService]
 })
 export class GeneratorPage {
     subjects: string[];
@@ -14,16 +17,28 @@ export class GeneratorPage {
     searchSelectSubjectString = '';
     searchDeleteSubjectString = '';
 
-    constructor(public navCtrl: NavController) {
+    public people: any;
+    items : any;
+
+    constructor(public navCtrl: NavController, public racoService: RacoService) {
         this.subjects = [ 'AC', 'BD' ];
         this.selectedSubjects = [];
         this.filteredSelectSubjects = this.subjects;
         this.filteredDeleteSubjects = this.selectedSubjects;
+
+        this.loadSubjects();
+    }
+
+    loadSubjects(){
+        this.racoService.load()
+        .then(data => {
+            this.people = data;
+            console.log("Received data");
+        });
     }
 
     generateTimetable() {
-        console.log("Selected: " + this.selectedSubjects);
-        console.log("Total: " + this.subjects);
+        console.log(this.people);
     }
 
     searchSelectSubjects(searchbar) {
@@ -79,7 +94,7 @@ export class GeneratorPage {
     deleteSubject(subject: string) {
         var index = this.selectedSubjects.indexOf(subject, 0);
         if (index > -1) {
-           this.selectedSubjects.splice(index, 1);
+            this.selectedSubjects.splice(index, 1);
         }
 
         this.filteredSelectSubjects.push(subject);

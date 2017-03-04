@@ -5,6 +5,7 @@ import { LoginPage } from '../pages/login/login';
 import { HomePage } from '../pages/home/home';
 import { GeneratorPage } from '../pages/generator/generator';
 import { AuthService } from '../providers/auth-service';
+import { RacoService } from '../providers/raco-service';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,6 @@ import { AuthService } from '../providers/auth-service';
     HomePage,
     GeneratorPage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}, AuthService],
+  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}, AuthService, RacoService],
 })
 export class AppModule {}
