@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Timetable Generator</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <h4>Select subjects</h4>
+    <ion-searchbar [(ngModel)]="searchSelectSubjectString" (input)="searchSelectSubjects($event)" 
+    placeholder="Search"></ion-searchbar>
+    <ion-list>
+      <button ion-item *ngFor="let subject of filteredSelectSubjects" (click)="selectSubject(subject)">
+        {{subject}}
+      </button>
+    </ion-list>
+  </ion-item>
+
+  <ion-item>
+    <h4>Delete subjects</h4>
+    <ion-searchbar [(ngModel)]="searchDeleteSubjectString" (input)="searchDeleteSubjects($event)" 
+    placeholder="Search"></ion-searchbar>
+    <ion-list>
+      <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
+        {{subject}}
+      </button>
+    </ion-list>
+  </ion-item>
+
+  <div padding>
+    <button ion-button secondary buttonGenerate (click)='generateTimetable();'>Generate</button>
+  </div>
+</ion-content>

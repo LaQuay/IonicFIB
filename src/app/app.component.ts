@@ -4,6 +4,7 @@ import { StatusBar, Splashscreen } from 'ionic-native';
 
 import { LoginPage } from '../pages/login/login';
 import { HomePage } from '../pages/home/home';
+import { GeneratorPage } from '../pages/generator/generator';
 
 
 @Component({
@@ -12,17 +13,18 @@ import { HomePage } from '../pages/home/home';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = LoginPage;
+  rootPage: any = GeneratorPage;
 
   pages: Array<{title: string, component: any}>;
 
   constructor(public platform: Platform) {
     this.initializeApp();
 
-    // used for an example of ngFor and navigation
+    // Sidebar link pages
     this.pages = [
-      { title: 'Page Login', component: LoginPage },
-      { title: 'Page Home', component: HomePage }
+      { title: 'Login', component: LoginPage },
+      { title: 'Home', component: HomePage },
+      { title: 'Timetable Generator', component: GeneratorPage }
     ];
 
   }

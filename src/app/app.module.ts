@@ -3,13 +3,15 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { LoginPage } from '../pages/login/login';
 import { HomePage } from '../pages/home/home';
+import { GeneratorPage } from '../pages/generator/generator';
 import { AuthService } from '../providers/auth-service';
 
 @NgModule({
   declarations: [
     MyApp,
     LoginPage,
-    HomePage
+    HomePage,
+    GeneratorPage
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -18,7 +20,8 @@ import { AuthService } from '../providers/auth-service';
   entryComponents: [
     MyApp,
     LoginPage,
-    HomePage
+    HomePage,
+    GeneratorPage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler}, AuthService],
 })
