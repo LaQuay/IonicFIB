@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 
 import { NavController } from 'ionic-angular';
 
-import { RacoService } from '../../providers/raco-service';
+import { PublicRacoService } from '../../providers/public-raco-service';
 
 @Component({
     selector: 'page-generator',
     templateUrl: 'generator.html',
-    providers: [RacoService]
+    providers: [PublicRacoService]
 })
 export class GeneratorPage {
     subjects: string[];
@@ -17,28 +17,35 @@ export class GeneratorPage {
     searchSelectSubjectString = '';
     searchDeleteSubjectString = '';
 
-    public people: any;
-    items : any;
+    data: any[];
 
-    constructor(public navCtrl: NavController, public racoService: RacoService) {
-        this.subjects = [ 'AC', 'BD' ];
-        this.selectedSubjects = [];
-        this.filteredSelectSubjects = this.subjects;
-        this.filteredDeleteSubjects = this.selectedSubjects;
-
+    constructor(public navCtrl: NavController, public publicRacoService: PublicRacoService) {
         this.loadSubjects();
     }
 
-    loadSubjects(){
-        this.racoService.load()
+    loadSubjects() {
+        this.publicRacoService.load()
         .then(data => {
-            this.people = data;
             console.log("Received data");
+            this.data = Object.keys(data).map(key => data[key]);
+            //console.log(this.data);
+
+            this.initializeData();
         });
     }
 
+    initializeData() {
+        var subjectNames = this.data.map(function(a) {return a.sigles;});
+        //console.log(subjectNames);
+
+        this.subjects = subjectNames;
+        this.selectedSubjects = [];
+        this.filteredSelectSubjects = this.subjects;
+        this.filteredDeleteSubjects = this.selectedSubjects;
+    }
+
     generateTimetable() {
-        console.log(this.people);
+        console.log(this.subjects);
     }
 
     searchSelectSubjects(searchbar) {
@@ -89,6 +96,9 @@ export class GeneratorPage {
             var isSelected = this.selectedSubjects.indexOf(v) > -1;
             return !isSelected;
         })
+
+        console.log(subject);
+        console.log(this.selectedSubjects);
     }
 
     deleteSubject(subject: string) {

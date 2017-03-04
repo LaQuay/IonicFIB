@@ -13,9 +13,13 @@
     <ion-searchbar [(ngModel)]="searchSelectSubjectString" (input)="searchSelectSubjects($event)" 
     placeholder="Search"></ion-searchbar>
     <ion-list>
-      <button ion-item *ngFor="let subject of filteredSelectSubjects" (click)="selectSubject(subject)">
-        {{subject}}
-      </button>
+      <div *ngFor="let subject of filteredSelectSubjects;  let i=index">
+        <div *ngIf="i<5">
+          <button ion-item (click)="selectSubject(subject)">
+            {{subject}}
+          </button>
+        </div>
+      </div>
     </ion-list>
   </ion-item>
 
@@ -24,9 +28,9 @@
     <ion-searchbar [(ngModel)]="searchDeleteSubjectString" (input)="searchDeleteSubjects($event)" 
     placeholder="Search"></ion-searchbar>
     <ion-list>
-      <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
-        {{subject}}
-      </button>
+        <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
+          {{subject}}
+        </button>
     </ion-list>
   </ion-item>
 
