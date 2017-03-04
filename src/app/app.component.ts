@@ -2,10 +2,8 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
 
-import { LoginPage } from '../pages/login/login';
 import { HomePage } from '../pages/home/home';
 import { GeneratorPage } from '../pages/generator/generator';
-
 
 @Component({
   templateUrl: 'app.html'
@@ -13,7 +11,7 @@ import { GeneratorPage } from '../pages/generator/generator';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = GeneratorPage;
+  rootPage: any = HomePage;
 
   pages: Array<{title: string, component: any}>;
 
@@ -22,7 +20,6 @@ export class MyApp {
 
     // Sidebar link pages
     this.pages = [
-      { title: 'Login', component: LoginPage },
       { title: 'Home', component: HomePage },
       { title: 'Timetable Generator', component: GeneratorPage }
     ];

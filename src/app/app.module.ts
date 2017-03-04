@@ -1,7 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
-import { LoginPage } from '../pages/login/login';
 import { HomePage } from '../pages/home/home';
 import { GeneratorPage } from '../pages/generator/generator';
 import { AuthService } from '../providers/auth-service';
@@ -11,7 +10,6 @@ import { ScheduleAlgorithm } from '../providers/schedule-algorithm';
 @NgModule({
   declarations: [
     MyApp,
-    LoginPage,
     HomePage,
     GeneratorPage
   ],
@@ -21,7 +19,6 @@ import { ScheduleAlgorithm } from '../providers/schedule-algorithm';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    LoginPage,
     HomePage,
     GeneratorPage
   ],

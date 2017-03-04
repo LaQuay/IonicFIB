@@ -1,56 +1,107 @@
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import { HTTP } from 'ionic-native';
+import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
- 
-export class User {
-  name: string;
-  email: string;
- 
-  constructor(name: string, email: string) {
-    this.name = name;
-    this.email = email;
-  }
-}
+import 'rxjs/add/operator/map';
+
+declare var window: any;
+declare var JSO: any;
+
+var BASE_URL: string="https://api.fib.upc.edu/v2/o/";
+var AUTH_URL: string="authorize/";
+var CODE_URL: string="token/";
+var CLIENT_PARAM: string="client_id="; 
+var CLIENT_ID: string="lM6FOOG62LliFSfxYbD3MqwxSDUR7JuEodgNFRX8";
+var CLIENT_SECRET_PARAM: string="client_secret="; 
+var CLIENT_SECRET_ID: string="3SprqSpnD2hF7XdUdfAseDS8e3YDHQYcSnciW3F3VxU3SDz1jI4qFUidEZZTJoe3KIpIR1epJ17rMHsT36xX19YIQYTZTNtuZmS0LurQ5QZayBSGweJ1WfoNGF5mStsn";
+var REDIRECT_PARAM: string="redirect_uri=";
+var REDIRECT_URI: string="http://localhost/callback";
+var RANDOM_STRING: string="fast_parrot";
  
 @Injectable()
 export class AuthService {
-  currentUser: User;
+  currentToken: string;
  
-  public login(credentials) {
-    if (credentials.email === null || credentials.password === null) {
-      return Observable.throw("Please insert credentials");
-    } else {
-      return Observable.create(observer => {
-        // At this point make a request to your backend to make a real check!
-        let access = (credentials.password === "pass" && credentials.email === "email");
-        this.currentUser = new User('Simon', 'saimon@devdactic.com');
-        observer.next(access);
-        observer.complete();
-      });
-    }
-  }
- 
-  public register(credentials) {
-    if (credentials.email === null || credentials.password === null) {
-      return Observable.throw("Please insert credentials");
-    } else {
-      // At this point store the credentials to your backend!
-      return Observable.create(observer => {
-        observer.next(true);
-        observer.complete();
-      });
-    }
-  }
- 
-  public getUserInfo() : User {
-    return this.currentUser;
-  }
- 
-  public logout() {
-    return Observable.create(observer => {
-      this.currentUser = null;
-      observer.next(true);
-      observer.complete();
+  public login(): Promise<any> {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+    //IF ANDROID OR IOS
+      if (window.cordova != undefined){
+        var browserRefExitFunc = function(event) {
+          console.log("The sign-in flow was canceled");
+          reject("The sign-in flow was canceled");
+        };
+        var url_OAUTH_CODE = BASE_URL + AUTH_URL + "?" + CLIENT_PARAM + CLIENT_ID + "&" + REDIRECT_PARAM + REDIRECT_URI + "&response_type=code&state=" + RANDOM_STRING;
+        console.log('URL OAUTH_CODE: ' + url_OAUTH_CODE);
+        //GETTING THE AUTH CODE
+        var browserRef = window.cordova.InAppBrowser.open(url_OAUTH_CODE, "_blank", "location=no,clearsessioncache=yes,clearcache=yes");
+        browserRef.addEventListener("loadstart", (event) => {
+          if ((event.url).indexOf(REDIRECT_URI) === 0) {
+            //RECEIVING THE AUTH CODE
+            var code = (event.url).split("code=")[1];
+            console.log("Code: " + code);
+            browserRef.removeEventListener("exit", browserRefExitFunc);
+            browserRef.close();
+
+            var url_OAUTH_AUTH = BASE_URL + CODE_URL + "?" + CLIENT_PARAM + CLIENT_ID + "&" + CLIENT_SECRET_PARAM + CLIENT_SECRET_ID + "&grant_type=authorization_code&code=" + code + "&" + REDIRECT_PARAM + REDIRECT_URI;
+            console.log('URL OAUTH_AUTH: ' + url_OAUTH_AUTH);
+            HTTP.post(url_OAUTH_AUTH, {}, {})
+              .then(data => {
+                console.log("Response OK");
+                console.log(data.status);
+                console.log(data.data); // data received by server
+                console.log(data.headers);
+                var response = JSON.parse(data.data);
+                self.setCurrentToken(response.access_token);
+                resolve();
+              })
+              .catch(error => {
+                console.log("Response Fail");
+                console.log(error.status);
+                console.log(error.error);
+                console.log(error.headers);
+              });
+            }
+        });
+        browserRef.addEventListener("exit", browserRefExitFunc);
+        } else {
+          //TODO OAUTH for PC
+          //https://github.com/andreassolberg/jso
+          //https://forum.ionicframework.com/t/how-to-implement-google-oauth-in-an-ionic-2-app/47038/4
+          //https://github.com/myurasov/Salesforce-REST-API-Ionic-Framework-App-Sample
+            var jso = new JSO({
+              providerID: "fibRaco",
+              client_id: CLIENT_ID,
+              redirect_uri: REDIRECT_URI,
+              authorization: AUTH_URL,
+          });
+
+          jso.callback();
+
+          jso.getToken(function(token) {
+             console.log("I got the token: " + token);
+             console.log("Access token string itself:" + token.access_token);
+          });
+        }
     });
+  }
+ 
+  public logout(): Promise<any> {
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      self.setCurrentToken("0");
+      resolve();
+    });
+  }
+
+  public setCurrentToken(access_token) {
+    console.log("Saving token: " + access_token);
+    window.localStorage.setItem('access_token', access_token);    
+  }
+
+  public getCurrentToken() {
+    var access_token = window.localStorage.getItem('access_token');
+    console.log("Saving token: " + access_token);
+    return access_token;    
   }
 }

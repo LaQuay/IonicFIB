@@ -37,8 +37,15 @@
     "cordova-plugin-statusbar",
     "cordova-plugin-device",
     "ionic-plugin-keyboard",
-    "cordova-plugin-splashscreen"
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-inappbrowser"
   ],
-  "cordovaPlatforms": [],
+  "cordovaPlatforms": [
+    {
+      "platform": "android",
+      "version": "",
+      "locator": "android"
+    }
+  ],
   "description": "myApp2: An Ionic project"
 }
