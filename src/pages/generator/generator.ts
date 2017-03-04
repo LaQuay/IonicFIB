@@ -18,11 +18,13 @@ export class GeneratorPage {
     searchSelectSubjectString = '';
     searchDeleteSubjectString = '';
 
+    computedSchedule: string[];
+
     dataSubjects: any[];
     dataTimetables: any[];
 
     constructor(public navCtrl: NavController, private publicRacoService: PublicRacoService,
-                private scheduleAlgorithm: ScheduleAlgorithm) {
+        private scheduleAlgorithm: ScheduleAlgorithm) {
         this.loadTimetableSubjects();
         //this.loadSubjects();
     }
@@ -68,7 +70,14 @@ export class GeneratorPage {
 
         this.scheduleAlgorithm.setData(timetables);
         var timetable = this.scheduleAlgorithm.calculateTimetable();
-        console.log(timetable);
+        this.computedSchedule = [];
+        for (var i = 0; i < timetable.length; ++i) {
+            this.computedSchedule.push(
+                timetable[i].codi_assig + timetable[i].grup + 
+                ' - ' + timetable[i].dia_setmana +' (' + timetable[i].inici + '-' + 
+                (timetable[i].iniciHour + timetable[i].durada) + ':00' + ')'
+                );
+        }
     }
 
     searchSelectSubjects(searchbar) {

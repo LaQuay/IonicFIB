@@ -78,24 +78,45 @@ export class ScheduleAlgorithm {
         var resultSubjects = [];
         var allSubjects = [];
 
-        for (var i = 0; i < this.nClasses; ++i) {
+        var resultSubjectsGroups = [];
+        var allSubjectsGroups = [];
+
+        for (var i = 0; i< this.nClasses; ++i) {
             var subjectName = this.subjecTimetable[i].codi_assig;
+            var group = this.subjecTimetable[i].grup;
+            var type = this.subjecTimetable[i].tipus;
+
+            // Student timetable must have all classes of Theory and all classes of Lab
+            var subjectNameType = subjectName + type;
+
+            // For simplify, Lab+Prob must be the same group
+            if (type === 'P') type = 'L';
+            group = group + type;
 
             if (!result[i]) { // If subject is not chosen
-                var notAllClassesSubject = resultSubjects.indexOf(subjectName) > -1;
-                if (notAllClassesSubject) {
-                    // If another class of the subject was chosen, the solution is invalid
+                // If the group of the subject was chosen, the solution is invalid
+                if (resultSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) > -1)
                     return INVALID_SOLUTION;
-                }
             }
             else { // If subject is chosen
-                if (allSubjects.indexOf(subjectName) > -1 && resultSubjects.indexOf(subjectName) === -1) {
-                    // Another class of the subject was not chosen
+                // Another class of the subject was not chosen
+                if (allSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) > -1 && 
+                    resultSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) === -1) 
                     return INVALID_SOLUTION;
-                }
+
+                // If another group of the same subject was chosen
+                var groupsSubj = resultSubjectsGroups.filter((v) => {
+                    return v.codi_assig === subjectNameType;
+                }).map(function(a) {return a.grup;});
+                if (groupsSubj.length > 0 && groupsSubj.indexOf(group) === -1) return INVALID_SOLUTION;
 
                 // All subject names of the solution
                 if (resultSubjects.indexOf(subjectName) === -1) resultSubjects.push(subjectName);
+                if (resultSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) === -1) 
+                    resultSubjectsGroups.push({
+                        codi_assig: subjectNameType,
+                        grup: group
+                    });
 
                 var dia = this.subjecTimetable[i].dia_setmana;
                 var inici = this.translateHourString(this.subjecTimetable[i].inici);
@@ -113,6 +134,8 @@ export class ScheduleAlgorithm {
 
             // All subject names
             if (allSubjects.indexOf(subjectName) === -1) allSubjects.push(subjectName);
+            if (allSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) === -1)
+                allSubjectsGroups.push({codi_assig: subjectNameType, grup: group});
         }
 
         var nSubjectsNotChosen = allSubjects.length - resultSubjects.length;
@@ -122,58 +145,50 @@ export class ScheduleAlgorithm {
             * more than 6h / day
             * dead hours between classes
             * morning and afternoon classes
-        */
-
-        for (var i = 0; i < timetableIntervals.length; ++i) {
-            var firstHour = -1;
-            var lastHour = -1;
-            var sumHoursDay = 0;
-            for (var j = 0; j < timetableIntervals[i].length; ++j) {
-                if (timetableIntervals[i][j]) {
-                    var hour = hourInit + (j / intervalsPerHour);
-                    if (lastHour !== -1) {
-                        if ((hour-lastHour) > 0.5) score += DEAD_HOUR_PENALTY;
+            */
+            for (var i = 0; i < timetableIntervals.length; ++i) {
+                var firstHour = -1;
+                var lastHour = -1;
+                var sumHoursDay = 0;
+                for (var j = 0; j < timetableIntervals[i].length; ++j) {
+                    if (timetableIntervals[i][j]) {
+                        var hour = hourInit + (j / intervalsPerHour);
+                        if (lastHour !== -1) {
+                            if ((hour-lastHour) > 0.5) score += DEAD_HOUR_PENALTY;
+                        }
+                        if (firstHour === -1) firstHour = hour;
+                        lastHour = hour;
+                        sumHoursDay += 1.0 / intervalsPerHour;
                     }
-                    if (firstHour === -1) firstHour = hour;
-                    lastHour = hour;
-                    sumHoursDay += 1.0 / intervalsPerHour;
+                }
+                if (sumHoursDay >= 6) score += TOO_MANY_HOURS_PENALTY;
+                if (sumHoursDay > 0 && lastHour > 16 && firstHour < 12)  score += LARGE_DAY_PENALTY;
+            }
+
+            return score;
+        }
+
+        translateTimetableResult(result) {
+            var timetable = [];
+            for (var i = 0; i < this.nClasses; ++i) {
+                if (result[i]) {
+                    timetable.push({
+                        codi_assig: this.subjecTimetable[i].codi_assig,
+                        dia_setmana: this.subjecTimetable[i].dia_setmana,
+                        inici: this.subjecTimetable[i].inici,
+                        iniciHour: this.translateHourString(this.subjecTimetable[i].inici),
+                        durada: this.subjecTimetable[i].durada,
+                        grup: (this.subjecTimetable[i].grup + this.subjecTimetable[i].tipus),
+                    });
                 }
             }
-            //console.log("Day " + (i+1) + " " + sumHoursDay);
-            if (sumHoursDay >= 6) score += TOO_MANY_HOURS_PENALTY;
-            if (sumHoursDay > 0 && lastHour > 16 && firstHour < 12)  score += LARGE_DAY_PENALTY;
+            return timetable;
         }
 
-        return score;
-    }
+        translateHourString(hm) {
+            var a = hm.split(':');
 
-    translateTimetableResult(result) {
-        var timetable = [];
-        for (var i = 0; i < this.nClasses; ++i) {
-            if (result[i]) {
-                timetable.push(this.subjecTimetable[i].codi_assig)/* +
-                               '_dia' + this.subjecTimetable[i].dia_setmana +
-                               '_hora' + this.subjecTimetable[i].inici +
-                               '_durada' + this.subjecTimetable[i].durada
-                               );*/
-                /*
-                timetable.push({
-                    codi_assig: this.subjecTimetable[i].codi_assig,
-                    dia_setmana: this.subjecTimetable[i].dia_setmana,
-                    inici: this.subjecTimetable[i].inici,
-                    iniciHour: this.translateHourString(this.subjecTimetable[i].inici),
-                    durada: this.subjecTimetable[i].durada
-                });
-                */
-            }
+            var hour = (+a[0]) + (+a[1]/2);
+            return hour;
         }
-        return timetable;
     }
-
-    translateHourString(hm) {
-        var a = hm.split(':');
-
-        var hour = (+a[0]) + (+a[1]/2);
-        return hour;
-    }
-}
