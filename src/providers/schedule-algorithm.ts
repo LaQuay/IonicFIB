@@ -19,14 +19,14 @@ export class ScheduleAlgorithm {
 
     constructor() {
         console.log('Hello ScheduleAlgorithm Provider');
-
-        this.resultTimeTable = [];
-        this.resultScore = INVALID_SOLUTION;
     }
 
     setData(timetable) {
         this.subjecTimetable = timetable;
         this.nClasses = this.subjecTimetable.length;
+
+        this.resultTimeTable = [];
+        this.resultScore = INVALID_SOLUTION;
     }
 
     calculateTimetable() {
@@ -151,13 +151,12 @@ export class ScheduleAlgorithm {
         var timetable = [];
         for (var i = 0; i < this.nClasses; ++i) {
             if (result[i]) {
-                /*
-                timetable.push(this.subjecTimetable[i].codi_assig +
+                timetable.push(this.subjecTimetable[i].codi_assig)/* +
                                '_dia' + this.subjecTimetable[i].dia_setmana +
                                '_hora' + this.subjecTimetable[i].inici +
                                '_durada' + this.subjecTimetable[i].durada
-                               );
-                               */
+                               );*/
+                /*
                 timetable.push({
                     codi_assig: this.subjecTimetable[i].codi_assig,
                     dia_setmana: this.subjecTimetable[i].dia_setmana,
@@ -165,6 +164,7 @@ export class ScheduleAlgorithm {
                     iniciHour: this.translateHourString(this.subjecTimetable[i].inici),
                     durada: this.subjecTimetable[i].durada
                 });
+                */
             }
         }
         return timetable;
