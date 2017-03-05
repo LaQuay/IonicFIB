@@ -1,6 +1,6 @@
 # IonicFIB
 
-Ionic FIB is an application made with the Ionic v2 Framework. And as a result, it gives an Android compatible application.
+Ionic FIB is an application made with the Ionic v2 Framework. And as a result, it gives an Android compatible application. As it is a webapp, it also can be executed on Web.
 
 The main goal of this app is to check the new FIB API v2. Accessing both sides of it. The public part and the private part, which requires an OAuth authentication.
 
