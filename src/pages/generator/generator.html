@@ -8,43 +8,45 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-item>
-          <h4>Select subjects</h4>
-          <ion-searchbar [(ngModel)]="searchSelectSubjectString" (input)="searchSelectSubjects($event)" 
-          placeholder="Search"></ion-searchbar>
-          <ion-list>
-            <div *ngFor="let subject of filteredSelectSubjects;  let i=index">
-            <div *ngIf="i<5">
-                <button ion-item (click)="selectSubject(subject)">
-                  {{subject}}
-                </button>
+  <ion-card>
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <h4>Select subjects</h4>
+            <ion-searchbar [(ngModel)]="searchSelectSubjectString" (input)="searchSelectSubjects($event)" 
+            placeholder="Search"></ion-searchbar>
+            <ion-list>
+              <div *ngFor="let subject of filteredSelectSubjects;  let i=index">
+                <div *ngIf="i<5">
+                  <button ion-item (click)="selectSubject(subject)">
+                    {{subject}}
+                  </button>
+                </div>
               </div>
-            </div>
-          </ion-list>
-        </ion-item>
-      </ion-col>
+            </ion-list>
+          </ion-item>
+        </ion-col>
 
-      <ion-col>
-        <ion-item>
-          <h4>Delete subjects</h4>
-          <ion-searchbar [(ngModel)]="searchDeleteSubjectString" (input)="searchDeleteSubjects($event)" 
-          placeholder="Search"></ion-searchbar>
-          <ion-list>
-            <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
-              {{subject}}
-            </button>
-          </ion-list>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        <ion-col>
+          <ion-item>
+            <h4>Delete subjects</h4>
+            <ion-searchbar [(ngModel)]="searchDeleteSubjectString" (input)="searchDeleteSubjects($event)" 
+            placeholder="Search"></ion-searchbar>
+            <ion-list>
+              <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
+                {{subject}}
+              </button>
+            </ion-list>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-  <div padding>
-    <button ion-button secondary buttonGenerate (click)='generateTimetable();'>Generate</button>
-  </div>
+    <div padding>
+      <button ion-button secondary buttonGenerate (click)='generateTimetable();'>Generate</button>
+    </div>
+  </ion-card>
 
   <ion-card>
     <ion-row>
