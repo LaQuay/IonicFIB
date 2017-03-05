@@ -17,8 +17,8 @@ var REDIRECT_PARAM: string="redirect_uri=";
 var REDIRECT_URI: string="http://localhost/callback";
 var RANDOM_STRING: string="fast_parrot";
 
-var USE_AUTH_TOKEN_HARDCODED: boolean=true;
-var AUTH_TOKEN_HARDCODED: string="L0eeH5P4CWCKrn8S8LDAeSBhe5lZnP";
+var USE_AUTH_TOKEN_HARDCODED: boolean=false;
+var AUTH_TOKEN_HARDCODED: string="";
 
 @Injectable()
 export class AuthService {

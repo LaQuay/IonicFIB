@@ -72,4 +72,24 @@ export class PrivateRacoService {
 	            });
     });				
   }
+
+  public getUserAlerts() {
+    console.log("Getting user alerts");
+
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+	    var URL = "https://api.fib.upc.edu/v2/jo/avisos/";
+	  	var access_token = window.localStorage.getItem('access_token');
+	  	var headers = new Headers();
+	    headers.append('Authorization', 'Bearer ' + access_token);
+	    headers.append('Accept', 'application/json');
+
+		self.http.get(URL, {"headers": headers})
+	            .map(res => res.json())
+	            .subscribe(data => {
+	                resolve(data);
+	            });
+    });				
+  }
 }
