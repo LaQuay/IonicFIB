@@ -32,9 +32,6 @@ export class ScheduleAlgorithm {
     calculateTimetable() {
         var result = new Array(this.nClasses).fill(false);
         this.calculateTimetableRec(result, 0);
-        console.log(this.translateTimetableResult(this.resultTimeTable));
-        console.log("Score: " + this.resultScore);
-
         return this.translateTimetableResult(this.resultTimeTable);
     }
 
@@ -62,7 +59,7 @@ export class ScheduleAlgorithm {
         var maxDays = 5;
         var hourInit = 8;
         var hourEnd = 21;
-        var intervalsPerHour = 2;
+        var intervalsPerHour = 1;
         var timetableIntervals = [];
         for(var i: number = 0; i < maxDays; i++) {
             timetableIntervals[i] = [];
@@ -70,7 +67,6 @@ export class ScheduleAlgorithm {
                 timetableIntervals[i][j] = false;
             }
         }
-
 
         var resultSubjects = [];
         var allSubjects = [];
@@ -94,6 +90,12 @@ export class ScheduleAlgorithm {
                 // If the group of the subject was chosen, the solution is invalid
                 if (this.subjectGroupInArray(resultSubjectsGroups, subjectNameType, group))
                     return INVALID_SOLUTION;
+
+                // If Lab is not chosen, but Theory was chosen, the solution is invalid ()
+                var typeResult = resultSubjectsGroups.filter((v) => {
+                    return v.codi_assig === subjectName;
+                });
+                if (typeResult.length > 0 && type !== typeResult[0].tipus) return INVALID_SOLUTION;
             }
             else { // If subject is chosen
                 // Another class of the subject was not chosen
@@ -112,7 +114,8 @@ export class ScheduleAlgorithm {
                 if (!this.subjectGroupInArray(resultSubjectsGroups, subjectNameType, group))
                     resultSubjectsGroups.push({
                         codi_assig: subjectNameType,
-                        grup: group
+                        grup: group,
+                        tipus: type
                     });
 
                 var dia = this.subjecTimetable[i].dia_setmana;
