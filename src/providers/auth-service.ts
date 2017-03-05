@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HTTP } from 'ionic-native';
-import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/map';
 
@@ -17,15 +16,18 @@ var CLIENT_SECRET_ID: string="3SprqSpnD2hF7XdUdfAseDS8e3YDHQYcSnciW3F3VxU3SDz1jI
 var REDIRECT_PARAM: string="redirect_uri=";
 var REDIRECT_URI: string="http://localhost/callback";
 var RANDOM_STRING: string="fast_parrot";
- 
+
+var USE_AUTH_TOKEN_HARDCODED: boolean=true;
+var AUTH_TOKEN_HARDCODED: string="L0eeH5P4CWCKrn8S8LDAeSBhe5lZnP";
+
 @Injectable()
 export class AuthService {
   currentToken: string;
- 
+  
   public login(): Promise<any> {
     var self = this;
     return new Promise(function(resolve, reject) {
-    //IF ANDROID OR IOS
+      //IF ANDROID OR IOS
       if (window.cordova != undefined){
         var browserRefExitFunc = function(event) {
           console.log("The sign-in flow was canceled");
@@ -46,50 +48,36 @@ export class AuthService {
             var url_OAUTH_AUTH = BASE_URL + CODE_URL + "?" + CLIENT_PARAM + CLIENT_ID + "&" + CLIENT_SECRET_PARAM + CLIENT_SECRET_ID + "&grant_type=authorization_code&code=" + code + "&" + REDIRECT_PARAM + REDIRECT_URI;
             console.log('URL OAUTH_AUTH: ' + url_OAUTH_AUTH);
             HTTP.post(url_OAUTH_AUTH, {}, {})
-              .then(data => {
-                console.log("Response OK");
-                console.log(data.status);
-                console.log(data.data); // data received by server
-                console.log(data.headers);
-                var response = JSON.parse(data.data);
-                self.setCurrentToken(response.access_token);
-                resolve();
-              })
-              .catch(error => {
-                console.log("Response Fail");
-                console.log(error.status);
-                console.log(error.error);
-                console.log(error.headers);
-              });
-            }
+            .then(data => {
+              console.log("Response OK");
+              console.log(data.status);
+              console.log(data.data); // data received by server
+              console.log(data.headers);
+              var response = JSON.parse(data.data);
+              self.setCurrentToken(response.access_token);
+              resolve();
+            })
+            .catch(error => {
+              console.log("Response Fail");
+              console.log(error.status);
+              console.log(error.error);
+              console.log(error.headers);
+            });
+          }
         });
         browserRef.addEventListener("exit", browserRefExitFunc);
-        } else {
-          //TODO OAUTH for PC
-          //https://github.com/andreassolberg/jso
-          //https://forum.ionicframework.com/t/how-to-implement-google-oauth-in-an-ionic-2-app/47038/4
-          //https://github.com/myurasov/Salesforce-REST-API-Ionic-Framework-App-Sample
-            var jso = new JSO({
-              providerID: "fibRaco",
-              client_id: CLIENT_ID,
-              redirect_uri: REDIRECT_URI,
-              authorization: AUTH_URL,
-          });
-
-          jso.callback();
-
-          jso.getToken(function(token) {
-             console.log("I got the token: " + token);
-             console.log("Access token string itself:" + token.access_token);
-          });
-        }
+      } else {
+        //TODO OAUTH for PC
+        //https://github.com/andreassolberg/jso
+        //https://forum.ionicframework.com/t/how-to-implement-google-oauth-in-an-ionic-2-app/47038/4
+        //https://github.com/myurasov/Salesforce-REST-API-Ionic-Framework-App-Sample
+      }
     });
   }
- 
+  
   public logout(): Promise<any> {
-    var self = this;
     return new Promise(function(resolve, reject) {
-      self.setCurrentToken("0");
+      window.localStorage.removeItem('access_token');   
       resolve();
     });
   }
@@ -101,7 +89,14 @@ export class AuthService {
 
   public getCurrentToken() {
     var access_token = window.localStorage.getItem('access_token');
-    console.log("Saving token: " + access_token);
+    if (USE_AUTH_TOKEN_HARDCODED){
+      access_token = AUTH_TOKEN_HARDCODED;
+    }
+    console.log("Loading token: " + access_token);
     return access_token;    
+  }
+
+  public useAuthHardcoded() {
+    return USE_AUTH_TOKEN_HARDCODED;
   }
 }
