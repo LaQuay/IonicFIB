@@ -36,7 +36,7 @@
           <ion-avatar item-left>
             <img src="assets/img/ic_school.png">
           </ion-avatar>
-          <h2>Classes d'avui</h2>
+          <h2><b>Classes d'avui</b></h2>
 
           <button ion-item *ngFor="let c of getTodayClasses()">
             {{c["codi_assig"]}} - {{c["tipus"]}}<br>
@@ -50,7 +50,7 @@
           <ion-avatar item-left>
             <img src="assets/img/ic_alert.png">
           </ion-avatar>
-          <h2>Ultims avisos</h2>
+          <h2><b>Ultims avisos</b></h2>
 
           <button ion-item *ngFor="let a of getUserAlertsToShow()">
             {{a["titol"]}}<br>
