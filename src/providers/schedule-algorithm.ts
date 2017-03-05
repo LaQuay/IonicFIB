@@ -191,4 +191,8 @@ export class ScheduleAlgorithm {
             var hour = (+a[0]) + (+a[1]/2);
             return hour;
         }
+
+        translateStringHour(hm) {
+            return hm + ":00";
+        }
     }

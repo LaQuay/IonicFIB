@@ -18,7 +18,10 @@ export class GeneratorPage {
     searchSelectSubjectString = '';
     searchDeleteSubjectString = '';
 
-    computedSchedule: string[];
+    computedSchedule: any[];
+    hours: string[] = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00", 
+    "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00", "18:00 - 19:00", "19:00 - 20:00", "20:00 - 21:00"];
+    days: string[] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     dataSubjects: any[];
     dataTimetables: any[];
@@ -26,7 +29,6 @@ export class GeneratorPage {
     constructor(public navCtrl: NavController, private publicRacoService: PublicRacoService,
         private scheduleAlgorithm: ScheduleAlgorithm) {
         this.loadTimetableSubjects();
-        //this.loadSubjects();
     }
 
     loadTimetableSubjects() {
@@ -69,15 +71,7 @@ export class GeneratorPage {
         })
 
         this.scheduleAlgorithm.setData(timetables);
-        var timetable = this.scheduleAlgorithm.calculateTimetable();
-        this.computedSchedule = [];
-        for (var i = 0; i < timetable.length; ++i) {
-            this.computedSchedule.push(
-                timetable[i].codi_assig + timetable[i].grup + 
-                ' - ' + timetable[i].dia_setmana +' (' + timetable[i].inici + '-' + 
-                (timetable[i].iniciHour + timetable[i].durada) + ':00' + ')'
-                );
-        }
+        this.computedSchedule = this.scheduleAlgorithm.calculateTimetable();
     }
 
     searchSelectSubjects(searchbar) {
@@ -139,4 +133,43 @@ export class GeneratorPage {
         this.filteredSelectSubjects.push(subject);
     }
 
+    hasClassOnTimetable(day: string, hour: string){
+        var foundValidClass = false;
+        if (this.computedSchedule != undefined){
+            var currentStartNum = this.scheduleAlgorithm.translateHourString(hour.split(" -")[0]);
+            var currentEndNum = this.scheduleAlgorithm.translateHourString(hour.split("- ")[1]);
+            this.computedSchedule.forEach((item, index) => {
+                if (foundValidClass == false){
+                    var classDay = this.days[item["dia_setmana"] - 1];
+                    var itemStartNum = this.scheduleAlgorithm.translateHourString(item["inici"]);
+                    var itemEndNum = itemStartNum + item["durada"];
+
+                    if (day == classDay && currentStartNum >= itemStartNum && currentEndNum <= itemEndNum){
+                        foundValidClass = true;
+                    }
+                }
+            });
+        }
+        return foundValidClass;
+    }
+
+    getClassOnTimetable(day: string, hour: string){
+        var validClass;
+        if (this.computedSchedule != undefined){
+            var currentStartNum = this.scheduleAlgorithm.translateHourString(hour.split(" -")[0]);
+            var currentEndNum = this.scheduleAlgorithm.translateHourString(hour.split("- ")[1]);
+            this.computedSchedule.forEach((item, index) => {
+                if (validClass == undefined){
+                    var classDay = this.days[item["dia_setmana"] - 1];
+                    var itemStartNum = this.scheduleAlgorithm.translateHourString(item["inici"]);
+                    var itemEndNum = itemStartNum + item["durada"];
+
+                    if (day == classDay && currentStartNum >= itemStartNum && currentEndNum <= itemEndNum){
+                        validClass = item["codi_assig"] + " " + item["grup"];
+                    }
+                }
+            });
+        }
+        return validClass;
+    }
 }
