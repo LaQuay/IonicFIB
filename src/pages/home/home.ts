@@ -19,11 +19,13 @@ export class HomePage {
   email: string;
   photo_url: string;
   classesResult: any;
+  alertsResult: any;
 
   constructor(public navCtrl: NavController, public authService: AuthService, public privateRacoService: PrivateRacoService, private platform: Platform) {
     this.isUserLogged = false;
 
     this.classesResult = [];
+    this.alertsResult = [];
 
     //Test only
     this.isUserLogged = this.authService.useAuthHardcoded();
@@ -60,6 +62,7 @@ export class HomePage {
   public loadUserData(){
     this.loadUserImage();
     this.getUserClasses();
+    this.getUserAlerts();
     this.privateRacoService.getUserData().then(success => {
       console.log(success);
       this.username = success["username"];
@@ -106,5 +109,19 @@ export class HomePage {
     //TODO Sort
 
     return todayClasses;
+  }
+
+  public getUserAlerts(){
+    this.privateRacoService.getUserAlerts().then(success => {
+      console.log(success);
+      this.alertsResult = success["results"];
+      console.log(this.alertsResult);
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
+  public getUserAlertsToShow(){
+    return this.alertsResult;
   }
 }

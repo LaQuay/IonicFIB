@@ -18,7 +18,7 @@
     <div *ngIf="isUserLogged == true">
       <ion-card>  
         <div id="over" style="position:relative; width:100%; height:100%">
-          <img style="max-width:100px;" data-src="{{photo_url}}">
+          <img style="max-width:75px;" data-src="{{photo_url}}">
         </div>
         <ion-card-content>
           <ion-card-title>
@@ -26,7 +26,7 @@
           </ion-card-title>
 
           User: {{username}} <br>
-          Email: {{email}}<br>
+          Email: {{email}}<br><br>
           <button ion-button secondary (click)="logout()">Logout</button> 
         </ion-card-content>
       </ion-card>
@@ -34,14 +34,27 @@
       <ion-card>  
         <ion-item>
           <ion-avatar item-left>
-            <img data-src="{{photo_url}}">
+            <img src="assets/img/ic_school.png">
           </ion-avatar>
           <h2>Classes d'avui</h2>
-          <p>------</p>
 
           <button ion-item *ngFor="let c of getTodayClasses()">
-            {{c["codi_assig"]}} - {{c["tipus"]}}
+            {{c["codi_assig"]}} - {{c["tipus"]}}<br>
             {{c["inici"]}} - {{c["aules"]}}
+          </button>
+        </ion-item>
+      </ion-card>
+
+      <ion-card>  
+        <ion-item>
+          <ion-avatar item-left>
+            <img src="assets/img/ic_alert.png">
+          </ion-avatar>
+          <h2>Ultims avisos</h2>
+
+          <button ion-item *ngFor="let a of getUserAlertsToShow()">
+            {{a["titol"]}}<br>
+            {{a["grup"]}} - {{a["data_insercio"]}}
           </button>
         </ion-item>
       </ion-card>
@@ -50,11 +63,12 @@
     <div *ngIf="isUserLogged == false">  
       <ion-card>
         <ion-card-header>
-          Log in {{lolo}}
+          Welcome guest
         </ion-card-header>
 
         <ion-card-content>
-          Guest user
+          Please, log in to get all the functionalities. 
+          <br><br>
           <button ion-button secondary (click)="login()">Login</button>
         </ion-card-content>
       </ion-card>
