@@ -14,7 +14,7 @@
     placeholder="Search"></ion-searchbar>
     <ion-list>
       <div *ngFor="let subject of filteredSelectSubjects;  let i=index">
-        <div *ngIf="i<5">
+        <div *ngIf="i<2">
           <button ion-item (click)="selectSubject(subject)">
             {{subject}}
           </button>
@@ -28,13 +28,19 @@
     <ion-searchbar [(ngModel)]="searchDeleteSubjectString" (input)="searchDeleteSubjects($event)" 
     placeholder="Search"></ion-searchbar>
     <ion-list>
-        <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
-          {{subject}}
-        </button>
+      <button ion-item *ngFor="let subject of filteredDeleteSubjects" (click)="deleteSubject(subject)">
+        {{subject}}
+      </button>
     </ion-list>
   </ion-item>
 
   <div padding>
     <button ion-button secondary buttonGenerate (click)='generateTimetable();'>Generate</button>
   </div>
+
+  <ion-list>
+    <div *ngFor="let subj of computedSchedule">
+      {{subj}}
+    </div>
+  </ion-list>
 </ion-content>

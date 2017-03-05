@@ -40,7 +40,6 @@ export class PublicRacoService {
     }
 
     loadTimetableSubjects() {
-        console.log('loadTimetableSubjects');
         return new Promise(resolve => {
             // We're using Angular HTTP provider to request the data,
             // then on the response, it'll map the JSON data to a parsed JS object.
@@ -48,7 +47,6 @@ export class PublicRacoService {
             this.http.get(API_RACO_URL + '/' + SEMESTER_ID + '/?' + JSON_FORMAT + '&' + 'client_id=' + CLIENT_ID)
             .map(res => res.json())
             .subscribe(data => {
-                console.log('loadTimetableSubjects subscribe');
                 var semesterIDs = (data.results).map(function(a) {return a.id;});
                 semesterIDs.sort(function(id1, id2){
                     return id1 < id2;
@@ -61,7 +59,6 @@ export class PublicRacoService {
     }
 
     loadSemesterTimetableSubjects(semesterID: string) {
-        console.log('loadSemesterTimetableSubjects');
         return new Promise(resolve => {
             // We're using Angular HTTP provider to request the data,
             // then on the response, it'll map the JSON data to a parsed JS object.
@@ -70,7 +67,6 @@ export class PublicRacoService {
                 + '/?' + JSON_FORMAT + '&' + 'client_id=' + CLIENT_ID)
             .map(res => res.json())
             .subscribe(data => {
-                console.log('loadSemesterTimetableSubjects subscribe');
                 this.dataTimetables = data.results;
                 resolve(this.dataTimetables);
             });
