@@ -4,9 +4,9 @@ import 'rxjs/add/operator/map';
 var TOO_MANY_HOURS_PENALTY = 60;
 var DEAD_HOUR_PENALTY = 1;
 var LARGE_DAY_PENALTY = 30;
-var OVERLAPPING_PENALTY = 5000;
 var SUBJECT_NOT_CHOSEN = 1000;
 
+var OVERLAPPING_PENALTY = Infinity;
 var INVALID_SOLUTION = Infinity;
 
 @Injectable()
@@ -32,8 +32,8 @@ export class ScheduleAlgorithm {
     calculateTimetable() {
         var result = new Array(this.nClasses).fill(false);
         this.calculateTimetableRec(result, 0);
-        //console.log(this.translateTimetableResult(this.resultTimeTable));
-        //console.log("Score: " + this.resultScore);
+        console.log(this.translateTimetableResult(this.resultTimeTable));
+        console.log("Score: " + this.resultScore);
 
         return this.translateTimetableResult(this.resultTimeTable);
     }
@@ -48,9 +48,6 @@ export class ScheduleAlgorithm {
                 for (var j = 0; j < result.length; ++j) {
                     this.resultTimeTable[j] = result[j];
                 }
-                //console.log(this.translateTimetableResult(result));
-                //console.log("Score: " + this.resultScore);
-                //console.log("--------------------------------")
             }
         }
         else {
@@ -95,13 +92,13 @@ export class ScheduleAlgorithm {
 
             if (!result[i]) { // If subject is not chosen
                 // If the group of the subject was chosen, the solution is invalid
-                if (resultSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) > -1)
+                if (this.subjectGroupInArray(resultSubjectsGroups, subjectNameType, group))
                     return INVALID_SOLUTION;
             }
             else { // If subject is chosen
                 // Another class of the subject was not chosen
-                if (allSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) > -1 && 
-                    resultSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) === -1) 
+                if (this.subjectGroupInArray(allSubjectsGroups, subjectNameType, group) &&
+                    !this.subjectGroupInArray(resultSubjectsGroups, subjectNameType, group)) 
                     return INVALID_SOLUTION;
 
                 // If another group of the same subject was chosen
@@ -111,8 +108,8 @@ export class ScheduleAlgorithm {
                 if (groupsSubj.length > 0 && groupsSubj.indexOf(group) === -1) return INVALID_SOLUTION;
 
                 // All subject names of the solution
-                if (resultSubjects.indexOf(subjectName) === -1) resultSubjects.push(subjectName);
-                if (resultSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) === -1) 
+                if (resultSubjects.indexOf(subjectNameType) === -1) resultSubjects.push(subjectNameType);
+                if (!this.subjectGroupInArray(resultSubjectsGroups, subjectNameType, group))
                     resultSubjectsGroups.push({
                         codi_assig: subjectNameType,
                         grup: group
@@ -133,8 +130,8 @@ export class ScheduleAlgorithm {
             }
 
             // All subject names
-            if (allSubjects.indexOf(subjectName) === -1) allSubjects.push(subjectName);
-            if (allSubjectsGroups.indexOf({codi_assig: subjectNameType, grup: group}) === -1)
+            if (allSubjects.indexOf(subjectNameType) === -1) allSubjects.push(subjectNameType);
+            if (!this.subjectGroupInArray(allSubjectsGroups, subjectNameType, group))
                 allSubjectsGroups.push({codi_assig: subjectNameType, grup: group});
         }
 
@@ -190,5 +187,12 @@ export class ScheduleAlgorithm {
 
             var hour = (+a[0]) + (+a[1]/2);
             return hour;
+        }
+
+        subjectGroupInArray(array, name, group) {
+            var subset = array.filter((v) => {
+                return v.codi_assig === name && v.grup === group;
+            });
+            return subset.length > 0;
         }
     }
